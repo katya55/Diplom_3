@@ -1,10 +1,7 @@
 import POM.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import io.restassured.response.ValidatableResponse;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import users.Creds;
 import users.Users;
@@ -21,7 +18,10 @@ public class EnterTests {
     private LoginPage loginPage;
     private PersonalAccountPage personalAccountPage;
     private ForgotPasswordPage forgotPasswordPage;
-    UsersClient usersClient = new UsersClient();
+    private UsersClient usersClient;
+    HomePageUpper homePageUpper;
+    ConstructorPage constructorPage;
+    private String accessToken;
 
 
     @RegisterExtension
@@ -31,63 +31,77 @@ public class EnterTests {
     public void starUp() {
         var driver = extension.getDriver();
         driver.get(BASE_URL);
+
+        homePage = new HomePage(driver);
+        loginPage = new LoginPage(driver);
+        registrationPage = new RegistrationPage(driver);
+        personalAccountPage = new PersonalAccountPage(driver);
+        homePageUpper = new HomePageUpper(driver);
+        constructorPage = new ConstructorPage(driver);
+        forgotPasswordPage = new ForgotPasswordPage(driver);
+        usersClient = new UsersClient();
+    }
+
+    @AfterEach
+    public void dropUser() {
+        if (accessToken != null) {
+            usersClient.deleteUser(accessToken);
+            System.out.println("Пользователь удален");
+        }
     }
 
     @Test
     @DisplayName("Вход по кнопке «Войти в аккаунт» на главной")
     void enterButtonLoginButton() {
         Users user = Users.randomUser();
-        usersClient.createUser(user);
-
+        ValidatableResponse response = usersClient.createUser(user);
+        accessToken = usersClient.checkCreated(response);
         var creds = Creds.getCreds(user);
         homePage.clickLogin();
         loginPage.logIn(creds);
-
-        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Кнопка не отобразилась");
+        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Логин не выполнен");
     }
 
     @Test
     @DisplayName("Вход через кнопку «Личный кабинет»")
     public void enterButtonPersonalAccountPage() {
         Users user = Users.randomUser();
-        usersClient.createUser(user);
-
+        ValidatableResponse response = usersClient.createUser(user);
+        accessToken = usersClient.checkCreated(response);
         var creds = Creds.getCreds(user);
-        homePage.clickPersonalCabinet();
+        homePageUpper.clickPersonalCabinet();
         loginPage.logIn(creds);
 
-        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Кнопка не отобразилась");
+        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Логин не выполнен");
     }
 
     @Test
     @DisplayName("Вход через кнопку в форме регистрации")
     public void enterRegistrationPage() {
         Users user = Users.randomUser();
-        usersClient.createUser(user);
-
+        ValidatableResponse response = usersClient.createUser(user);
+        accessToken = usersClient.checkCreated(response);
         var creds = Creds.getCreds(user);
         homePage.clickLogin();
         loginPage.clickRegisterButton();
         registrationPage.clickButtonEnter();
         loginPage.logIn(creds);
 
-        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Кнопка не отобразилась");
+        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Логин не выполнен");
     }
 
     @Test
     @DisplayName("Вход через кнопку в форме восстановления пароля")
     public void enterForgotPasswordPPage() {
         Users user = Users.randomUser();
-        usersClient.createUser(user);
-
+        ValidatableResponse response = usersClient.createUser(user);
+        accessToken = usersClient.checkCreated(response);
         var creds = Creds.getCreds(user);
         homePage.clickLogin();
         loginPage.clickForgotPassword();
         forgotPasswordPage.clickLoginButton();
         loginPage.logIn(creds);
 
-        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Кнопка не отобразилась");
+        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Логин не выполнен");
     }
-
-
 }

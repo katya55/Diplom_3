@@ -1,5 +1,6 @@
 package POM;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -7,11 +8,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-public class Constructor {
+public class ConstructorPage {
 
     private WebDriver driver;
 
-    public Constructor(WebDriver driver) {
+    public ConstructorPage(WebDriver driver) {
         this.driver = driver;
     }
 
@@ -25,41 +26,47 @@ public class Constructor {
     private final By fillingsTab = By.xpath("//div[contains(@class,'tab_tab__1SPyG')]/span[text()='Начинки']");
 
 
+    @Step("Переход на страницу Конструктор")
     public boolean isConstructorOpened() {
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(title));
         return true;
     }
 
+    @Step("Заголовок Булки отображается")
     public boolean isTitleBunsOpened() {
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(titleBuns));
         return true;
     }
 
+    @Step("Заголовок Соусы отображается")
     public boolean isTitleSaucesOpened() {
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(titleSauces));
         return true;
     }
 
+    @Step("Заголовок Начинки отображается")
     public boolean isTitleFillingsOpened() {
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(titleFillings));
         return true;
     }
 
+    @Step("Клик на Булки")
     public void clickBunsTab() {
         driver.findElement(bunsTab).click();
     }
 
+    @Step("Клик на Соусы")
     public void clickSaucesTab() {
         driver.findElement(saucesTab).click();
     }
 
+    @Step("Клик на начинки")
     public void clickFillingsTab() {
         driver.findElement(fillingsTab).click();
     }
-
 }
 
