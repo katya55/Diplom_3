@@ -22,7 +22,7 @@ public class EnterTests {
     HomePageUpper homePageUpper;
     ConstructorPage constructorPage;
     private String accessToken;
-
+    private Creds creds;
 
     @RegisterExtension
     static DriverExtension extension = new DriverExtension();
@@ -40,6 +40,11 @@ public class EnterTests {
         constructorPage = new ConstructorPage(driver);
         forgotPasswordPage = new ForgotPasswordPage(driver);
         usersClient = new UsersClient();
+
+        Users user = Users.randomUser();
+        ValidatableResponse response = usersClient.createUser(user);
+        accessToken = usersClient.checkCreated(response);
+        creds = Creds.getCreds(user);
     }
 
     @AfterEach
@@ -53,10 +58,6 @@ public class EnterTests {
     @Test
     @DisplayName("Вход по кнопке «Войти в аккаунт» на главной")
     void enterButtonLoginButton() {
-        Users user = Users.randomUser();
-        ValidatableResponse response = usersClient.createUser(user);
-        accessToken = usersClient.checkCreated(response);
-        var creds = Creds.getCreds(user);
         homePage.clickLogin();
         loginPage.logIn(creds);
         Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Логин не выполнен");
@@ -65,10 +66,6 @@ public class EnterTests {
     @Test
     @DisplayName("Вход через кнопку «Личный кабинет»")
     public void enterButtonPersonalAccountPage() {
-        Users user = Users.randomUser();
-        ValidatableResponse response = usersClient.createUser(user);
-        accessToken = usersClient.checkCreated(response);
-        var creds = Creds.getCreds(user);
         homePageUpper.clickPersonalCabinet();
         loginPage.logIn(creds);
 
@@ -78,10 +75,6 @@ public class EnterTests {
     @Test
     @DisplayName("Вход через кнопку в форме регистрации")
     public void enterRegistrationPage() {
-        Users user = Users.randomUser();
-        ValidatableResponse response = usersClient.createUser(user);
-        accessToken = usersClient.checkCreated(response);
-        var creds = Creds.getCreds(user);
         homePage.clickLogin();
         loginPage.clickRegisterButton();
         registrationPage.clickButtonEnter();
@@ -93,10 +86,6 @@ public class EnterTests {
     @Test
     @DisplayName("Вход через кнопку в форме восстановления пароля")
     public void enterForgotPasswordPPage() {
-        Users user = Users.randomUser();
-        ValidatableResponse response = usersClient.createUser(user);
-        accessToken = usersClient.checkCreated(response);
-        var creds = Creds.getCreds(user);
         homePage.clickLogin();
         loginPage.clickForgotPassword();
         forgotPasswordPage.clickLoginButton();

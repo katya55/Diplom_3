@@ -20,6 +20,7 @@ class ConstructorTest {
     private ConstructorPage constructor;
     private UsersClient usersClient;
     private String accessToken;
+    private String expectedUserName;
 
     @RegisterExtension
     static DriverExtension extension = new DriverExtension();
@@ -37,6 +38,21 @@ class ConstructorTest {
         constructor = new ConstructorPage(driver);
         ForgotPasswordPage forgotPasswordPage = new ForgotPasswordPage(driver);
         usersClient = new UsersClient();
+
+        Users user = Users.randomUser();
+        ValidatableResponse response = usersClient.createUser(user);
+        accessToken = usersClient.checkCreated(response);
+        var creds = Creds.getCreds(user);
+        homePage.clickLogin();
+        loginPage.logIn(creds);
+        expectedUserName = user.getName();
+        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Логин не выполнен");
+
+        homePageUpper.clickPersonalCabinet();
+        String actualName = personalAccountPage.getUsrName();
+        Assertions.assertEquals(expectedUserName, actualName,
+                "Личный кабинет не открыт");
+
     }
 
 
@@ -51,20 +67,6 @@ class ConstructorTest {
     @Test
     @DisplayName("Переход к разделу Булки")
     public void goToBuns() {
-        Users user = Users.randomUser();
-        ValidatableResponse response = usersClient.createUser(user);
-        accessToken = usersClient.checkCreated(response);
-        var creds = Creds.getCreds(user);
-        homePage.clickLogin();
-        loginPage.logIn(creds);
-        String expectedUserName = user.getName();
-        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Логин не выполнен");
-
-        homePageUpper.clickPersonalCabinet();
-        String actualName = personalAccountPage.getUsrName();
-        Assertions.assertEquals(expectedUserName, actualName,
-                "Личный кабинет не открыт");
-
         homePageUpper.clickLogo();
         assertTrue(constructor.isConstructorOpened(), "Конструктор не открыт");
 
@@ -76,15 +78,6 @@ class ConstructorTest {
     @Test
     @DisplayName("Переход к разделу Соусы")
     public void goToSauces() {
-        Users user = Users.randomUser();
-        ValidatableResponse response = usersClient.createUser(user);
-        accessToken = usersClient.checkCreated(response);
-        var creds = Creds.getCreds(user);
-        homePage.clickLogin();
-        loginPage.logIn(creds);
-        String expectedUserName = user.getName();
-        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Логин не выполнен");
-
         homePageUpper.clickPersonalCabinet();
         String actualName = personalAccountPage.getUsrName();
         Assertions.assertEquals(expectedUserName, actualName,
@@ -100,20 +93,6 @@ class ConstructorTest {
     @Test
     @DisplayName("Переход к разделу Начинки")
     public void goToFillings() {
-        Users user = Users.randomUser();
-        ValidatableResponse response = usersClient.createUser(user);
-        accessToken = usersClient.checkCreated(response);
-        var creds = Creds.getCreds(user);
-        homePage.clickLogin();
-        loginPage.logIn(creds);
-        String expectedUserName = user.getName();
-        Assertions.assertTrue(personalAccountPage.isOrderButtonVisible(), "Логин не выполнен");
-
-        homePageUpper.clickPersonalCabinet();
-        String actualName = personalAccountPage.getUsrName();
-        Assertions.assertEquals(expectedUserName, actualName,
-                "Личный кабинет не открыт");
-
         homePageUpper.clickLogo();
         assertTrue(constructor.isConstructorOpened(), "Конструктор не открыт");
 
